@@ -1,24 +1,18 @@
 #include "get_next_line.h"
-#include <stdlib.h>
 
 static char	*malloccpytoline(char *str)
 {
 	char	*linestr;
-	int	k;
 	int	i;
 
-	k = 0;
 	i = 0;
+	linestr = NULL;
 	while (str[i] != '\n')
 		i++;
 	if (!(linestr = (char*)malloc(sizeof(char) * (i + 1))))
 		return (0);
-	while (k < i)
-	{
-		linestr[k] = str[k];
-		k++;
-	}
-	linestr[k] = '\0';
+	linestr = ft_strncpy(linestr, str, i);
+	linestr[i] = '\0';
 	return (linestr);
 }
 
@@ -28,44 +22,80 @@ static char	*emptystr(char **line, char *str)
 	int	j;
 	char	*temp;
 
-	j = ft_strlen(str);
+	i = 0;
+	j = 0;
+	temp = NULL;
 	i = ft_strlen(*line);
-	while (str[i] == '\n')
-		i++;
-	temp = ft_strsub(str, i, j - i);
+	temp = ft_strdup(&str[i + 1]);
 	ft_strdel(&str);
 	str = temp;
-	ft_strdel(&temp);
 	return (str);	
 }
 
-int	get_next_line(const int fd, char **line)
+char	*emptyn(char *str)
 {
-	char	buf[BUFF_SIZE];
-	static char	*str;
-	int		nbread;
-	char		*s;
+	char	*temp;
 
-	if (!str)
-		str = ft_strnew(0);
-	if ((s = ft_strchr(str, '\n')) != 0 && *(s - 1) != '\n')
+	temp = NULL;
+	if  (str[0] == '\n')
 	{
-		*line = malloccpytoline(str);	
+		if (str[1])
+		{
+			temp = ft_strdup(&str[1]);
+			ft_strdel(&str);
+			str = temp;
+		}
+		else
+			str = "";
+	}
+	return (str);
+}
+
+/*static char	*readandstock(const int fd, char *str, char buf[BUFF_SIZE], char **line)
+{
+	int	nbread;
+	char	*temp;
+
+	temp = NULL;
+	nbread = 0;
+	if (ft_strchr(str, '\n'))
+	{
+		while (str[0] == '\n')
+			str = emptyn(str);
+		*line = malloccpytoline(str);
 		str = emptystr(line, str);
-		return (1);
+		return (str);
 	}
 	while ((nbread = read(fd, buf, BUFF_SIZE)) > 0)
 	{
 		buf[nbread] = '\0';
-		str = ft_strjoin(str, buf);	
-		if (str[0] == '\n')
-			str[0] = str[1];
-		if ((s = ft_strchr(str, '\n')) != 0 && *(s - 1) != '\n')
-		{
-			*line = malloccpytoline(str);
-			str = emptystr(line, str);
-			return (1);
-		}
+		temp = ft_strjoin(str, buf);
+		ft_strdel(&str);
+		str = temp;
+		while (str[0] == '\n')
+			str = emptyn(str);
+		if (ft_strchr(str, '\n') != 0)
+			break ;
 	}
 	return (0);
 }
+*/
+int	get_next_line(const int fd, char **line)
+{
+	char	buf[BUFF_SIZE];
+	static char	*str = NULL;
+
+	if (!str)
+		str = ft_strnew(0);
+	if (str)
+	{
+		str = readandstock(fd, str, buf, line);
+		if (ft_strlen(*line) > 0)
+			return (1);
+	}
+	if (nbread == 0 && ft_strlen(str) == 0)
+		return (0);
+	return (0);
+}
+
+//nbread == 0?? finir la fin; strlen == 0??

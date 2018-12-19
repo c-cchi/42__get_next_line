@@ -10,12 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../libft/libft.h"
-#include <unistd.h>
-#include <stdio.h>
+#include "./libft/libft.h"
 #include <fcntl.h>
 #include <stdlib.h>
-
+#include <stdio.h>
 int	get_next_line(const int fd, char **line);
 
 int	main(int argc, char **argv)
@@ -23,10 +21,10 @@ int	main(int argc, char **argv)
 	char	*line;
 	int		fd;
 
-	fd = open(argv[1], O_RDONLY);
-	if (argc == 0)
+	if (argc == 1)
 		return (0);
-	while (get_next_line(fd, &line))
+	fd = open(argv[1], O_RDONLY);
+	while (get_next_line(fd, &line) == 1)
 	{
 		ft_putendl(line);
 		free(line);
