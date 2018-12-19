@@ -64,6 +64,8 @@ int	get_next_line(const int fd, char **line)
 
 	temp = NULL;
 	nbread = 0;
+	if (fd < 0)
+		return (-1);
 	if (!str)
 		str = ft_strnew(0);
 	if (str)
@@ -72,7 +74,7 @@ int	get_next_line(const int fd, char **line)
 		{
 			buf[nbread] = '\0';
 			temp = ft_strjoin(str, buf);
-		//	ft_strdel(&str);
+			free(str);
 			str = temp;
 			while (str[0] == '\n')
 				str = emptyn(str);
