@@ -27,7 +27,7 @@ int	main(int argc, char **argv)
 	while (get_next_line(fd, &line) == 1)
 	{
 		ft_putendl(line);
-		free(line);
+	//	free(line);
 	}
 	return (0);
 }
