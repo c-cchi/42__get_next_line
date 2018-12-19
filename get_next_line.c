@@ -46,7 +46,7 @@ static char	*emptyn(char *str)
 		if (str[1])
 		{
 			temp = ft_strdup(&str[1]);
-		//	ft_strdel(&str);
+	//		ft_strdel(&str);
 			str = temp;
 		}
 		else
@@ -87,6 +87,11 @@ int	get_next_line(const int fd, char **line)
 				str = emptyn(str);
 			*line = malloccpytoline(str);
 			str = emptystr(line, str);
+		}
+		if (!ft_strchr(str, '\n') && ft_strlen(str) > 0)
+		{
+			*line = ft_strdup(str);
+			ft_strdel(&str);
 		}
 		if (ft_strlen(*line) > 0)
 			return (1);
