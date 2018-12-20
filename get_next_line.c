@@ -28,7 +28,7 @@ static char	*emptystr(char **line, char *str)
 	if (str[i])
 	{
 		temp = ft_strdup(&str[i]);
-	//	ft_strdel(&str);
+		ft_strdel(&str);
 		str = temp;
 	}
 	else
@@ -46,7 +46,7 @@ static char	*emptyn(char *str)
 		if (str[1])
 		{
 			temp = ft_strdup(&str[1]);
-	//		ft_strdel(&str);
+			ft_strdel(&str);
 			str = temp;
 		}
 		else
@@ -63,8 +63,7 @@ int	get_next_line(const int fd, char **line)
 	char	*temp;
 
 	temp = NULL;
-	nbread = 0;
-	if (fd < 0)
+	if (fd < 0 || !BUFF_SIZE || read(fd, 0, 0) == -1)
 		return (-1);
 	if (!str)
 		str = ft_strnew(0);
@@ -74,7 +73,7 @@ int	get_next_line(const int fd, char **line)
 		{
 			buf[nbread] = '\0';
 			temp = ft_strjoin(str, buf);
-			free(str);
+			ft_strdel(&str);
 			str = temp;
 			while (str[0] == '\n')
 				str = emptyn(str);
