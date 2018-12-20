@@ -32,7 +32,9 @@ static char	*emptystr(char **line, char *str)
 		str = temp;
 	}
 	else
-		str = "";
+		temp = "";
+		ft_strdel(&str);
+		str = temp;
 	return (str);	
 }
 
@@ -50,7 +52,9 @@ static char	*emptyn(char *str)
 			str = temp;
 		}
 		else
-			str = "";
+			temp = "";
+			ft_strdel(&str);
+			str = temp;
 	}
 	return (str);
 }
@@ -63,6 +67,7 @@ int	get_next_line(const int fd, char **line)
 	char	*temp;
 
 	temp = NULL;
+	nbread = 0;
 	if (fd < 0 || !BUFF_SIZE || read(fd, 0, 0) == -1)
 		return (-1);
 	if (!str)
@@ -76,8 +81,8 @@ int	get_next_line(const int fd, char **line)
 			ft_strdel(&str);
 			str = temp;
 			while (str[0] == '\n')
-				str = emptyn(str);
-			if (ft_strchr(str, '\n') != 0)
+				str = ft_strdup(emptyn(str));
+			if (ft_strchr(str, '\n'))
 				break ;
 		}
 		if (nbread == 0 && ft_strlen(str) == 0)
@@ -85,9 +90,9 @@ int	get_next_line(const int fd, char **line)
 		if (ft_strchr(str, '\n') != 0)
 		{
 			while (str[0] == '\n')
-				str = emptyn(str);
+				str = ft_strdup(emptyn(str));
 			*line = malloccpytoline(str);
-			str = emptystr(line, str);
+			str = ft_strdup(emptystr(line, str));
 		}
 		if (!ft_strchr(str, '\n') && ft_strlen(str) > 0)
 		{
@@ -99,4 +104,3 @@ int	get_next_line(const int fd, char **line)
 	}
 	return (0);
 }
-
