@@ -1,106 +1,75 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: cchi <marvin@42.fr>                        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/12/20 16:33:21 by cchi              #+#    #+#             */
+/*   Updated: 2018/12/22 19:21:41 by cchi             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "get_next_line.h"
+#include <stdio.h>
 
-static char	*malloccpytoline(char *str)
+static char	*strtoreturn(char *str, char *s, unsigned int i, char **line)
 {
-	char	*linestr;
-	int	i;
+	unsigned int j;
+	char	*swap;
 
-	i = 0;
-	linestr = NULL;
-	while (str[i] != '\n' && str[i])
-		i++;
-	if (!(linestr = (char*)malloc(sizeof(char) * (i + 1))))
-		return (0);
-	linestr[i] = '\0';
-	while (i--)
-		linestr[i] = str[i];
-	return (linestr);
-}
-
-static char	*emptystr(char **line, char *str)
-{
-	int	i;
-	char	*temp;
-
-	i = 0;
-	temp = NULL;
-	i = ft_strlen(*line);
-	if (str[i])
+	j = 0;
+	j = s - (str + i);
+	if (str[1] == '\n')
 	{
-		temp = ft_strdup(&str[i]);
-		ft_strdel(&str);
-		str = temp;
+		*line = ft_strnew(0);
+		if (str[2])
+			swap = ft_strdup(&str[2]);
+		else
+			swap = ft_strnew(0);
 	}
 	else
-		temp = "";
-		ft_strdel(&str);
-		str = temp;
-	return (str);	
-}
-
-static char	*emptyn(char *str)
-{
-	char	*temp;
-
-	temp = NULL;
-	if  (str[0] == '\n')
 	{
-		if (str[1])
-		{
-			temp = ft_strdup(&str[1]);
-			ft_strdel(&str);
-			str = temp;
-		}
-		else
-			temp = "";
-			ft_strdel(&str);
-			str = temp;
+		*line = ft_strsub(str, i, j);
+		swap = ft_strdup(&str[i + j]);
 	}
-	return (str);
+	ft_strdel(&str);
+	return (swap);
 }
 
 int	get_next_line(const int fd, char **line)
 {
-	char	buf[BUFF_SIZE + 1];
-	static char	*str = NULL;
-	int	nbread;
-	char	*temp;
+	char			buf[BUFF_SIZE + 1];
+	static char		*str = NULL;
+	unsigned int	i;
+	int				nbread;
+	char			*temp;
+	char			*s;
 
 	temp = NULL;
-	nbread = 0;
-	if (fd < 0 || !BUFF_SIZE || read(fd, 0, 0) == -1)
+	i = 0;
+	if (fd < 0 || !BUFF_SIZE || read(fd, 0, 0) == -1 || BUFF_SIZE < 0)
 		return (-1);
 	if (!str)
 		str = ft_strnew(0);
-	if (str)
+	if (str[i] == '\n')
+		i++;
+	while ((nbread = read(fd, buf, BUFF_SIZE)) > 0 && !(ft_strchr((str + i), '\n')))
 	{
-		while ((nbread = read(fd, buf, BUFF_SIZE)) > 0)
-		{
-			buf[nbread] = '\0';
-			temp = ft_strjoin(str, buf);
-			ft_strdel(&str);
-			str = temp;
-			while (str[0] == '\n')
-				str = ft_strdup(emptyn(str));
-			if (ft_strchr(str, '\n'))
-				break ;
-		}
-		if (nbread == 0 && ft_strlen(str) == 0)
-			return (0);
-		if (ft_strchr(str, '\n') != 0)
-		{
-			while (str[0] == '\n')
-				str = ft_strdup(emptyn(str));
-			*line = malloccpytoline(str);
-			str = ft_strdup(emptystr(line, str));
-		}
-		if (!ft_strchr(str, '\n') && ft_strlen(str) > 0)
-		{
-			*line = ft_strdup(str);
-			ft_strdel(&str);
-		}
-		if (ft_strlen(*line) > 0)
-			return (1);
+		buf[nbread] = '\0';
+		temp = ft_strjoin((str), buf);
+		ft_strdel(&str);
+		str = temp;
+		if (ft_strchr((str + i), '\n'))
+			break ;
 	}
+	if ((s = ft_strchr((str + i), '\n')) 
+			|| ((s = (str + i + ft_strlen((str + i)))) && nbread == 0 && ft_strlen(str + i)))
+	{
+		str = strtoreturn(str, s, i, line);
+		return (1);
+	}
+	if (nbread == 0 && ft_strlen(str) == 0)
+		return (0);
 	return (0);
 }
